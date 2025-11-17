@@ -3,13 +3,15 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:p2p_chat_app/data%20models/message.dart';
+import 'package:p2p_chat_app/interface/chat_type.dart';
 import 'package:p2p_chat_app/provider/chat_provider.dart';
 
-class Client {
+class Client implements ChatType {
   final int udpPort, tcpPort;
   Socket? socket;
   String? serverIp;
   ChatProvider chatProvider;
+  String deviceIp = '';
 
   Client({
     required this.chatProvider,
@@ -17,7 +19,9 @@ class Client {
     this.tcpPort = 5050,
   });
 
+  @override
   start() async {
+    deviceIp = await printDeviceIPs();
     serverIp = await _getHostIp();
     if (serverIp == null) {
       chatProvider.addSystemNotification('no Host found');
@@ -82,7 +86,7 @@ class Client {
           chatProvider.addSystemNotification('Disonnected from host');
           socket = null;
         },
-        onError: (e) {
+        onError: (e, stackTrace) {
           chatProvider.addSystemNotification('Error: $e');
           socket = null;
         },
@@ -92,17 +96,35 @@ class Client {
     }
   }
 
-  void sendMessage(message) {
+  @override
+  void sendMessage(Message message) {
     if (socket == null) {
       chatProvider.addSystemNotification('not Connected');
       return;
     }
 
-    socket!.write(message);
+    chatProvider.addMessage(message);
+    socket!.write(message.content);
   }
 
   void disconnect() {
     socket?.destroy();
     socket = null;
+  }
+
+  Future<String> printDeviceIPs() async {
+    final interfaces = await NetworkInterface.list(
+      includeLoopback: false,
+      type: InternetAddressType.IPv4,
+    );
+
+    for (var interface in interfaces) {
+      print('Interface: ${interface.name}');
+      for (var addr in interface.addresses) {
+        print('  IP Address: ${addr.address}');
+        return addr.address;
+      }
+    }
+    return 'Not Connected';
   }
 }

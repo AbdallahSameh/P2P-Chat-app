@@ -1,4 +1,5 @@
-//                                                 To do in many host case
+//                                                 To do in several hosts case
+// A menu that let's you choose between hosts
 
 // import 'package:flutter/material.dart';
 

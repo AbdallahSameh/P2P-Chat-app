@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:p2p_chat_app/ui/chat_screen.dart';
 
 class ServerClientChooser extends StatefulWidget {
   const ServerClientChooser({super.key});
@@ -55,7 +56,21 @@ class _ServerClientChooserState extends State<ServerClientChooser> {
                   child: Center(child: Text("Join")),
                 ),
               ),
-              ElevatedButton(onPressed: () {}, child: Text('Enter')),
+              ElevatedButton(
+                onPressed: () {
+                  if (choice == null) {
+                    return;
+                  }
+
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => ChatScreen(choice: choice!),
+                    ),
+                  );
+                },
+                child: Text('Enter'),
+              ),
             ],
           ),
         ),

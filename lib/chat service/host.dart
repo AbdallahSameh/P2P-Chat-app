@@ -2,17 +2,20 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:p2p_chat_app/data%20models/message.dart';
+import 'package:p2p_chat_app/interface/chat_type.dart';
 import 'package:p2p_chat_app/provider/chat_provider.dart';
 
-class Host {
+class Host implements ChatType {
   ChatProvider chatProvider;
   int udpPort;
   int tcpPort;
   List<Socket> clients = [];
   Socket? _selfSocket;
+  String deviceIp = 'Not Connected';
 
   Host({required this.chatProvider, this.udpPort = 2222, this.tcpPort = 5050});
 
+  @override
   Future<void> start() async {
     _udpResponder(udpPort);
     await _startTcpServer(tcpPort);
@@ -64,7 +67,7 @@ class Host {
           _handleMessage(client, data);
         },
         onDone: () => _removeClient(client),
-        onError: () => _removeClient(client),
+        onError: (error, stackTrace) => _removeClient(client),
       );
     });
   }
@@ -86,10 +89,10 @@ class Host {
     clients.remove(client);
   }
 
-  _broadcast(message, sender) {
+  _broadcast(Message message, sender) {
     for (var client in clients) {
       if (client != sender) {
-        client.write(message);
+        client.write(message.content);
       }
     }
   }
@@ -105,30 +108,22 @@ class Host {
         return addr.address;
       }
     }
-    return null;
+    return 'Not Connected';
   }
 
   _selfConnect() async {
-    final ip = await _getLocalIp();
-    _selfSocket = await Socket.connect(ip, tcpPort);
+    deviceIp = await _getLocalIp();
+    _selfSocket = await Socket.connect(deviceIp, tcpPort);
 
     if (_selfSocket == null) {
       chatProvider.addSystemNotification('Failed to connect the host');
       return;
     }
-
-    _selfSocket!.listen((data) {
-      final message = Message(
-        sender: _selfSocket!.remoteAddress.address,
-        content: utf8.decode(data),
-      );
-      chatProvider.addMessage(message);
-      chatProvider.addSystemNotification('A Message Received');
-    });
   }
 
-  void sendMessage(message) {
+  @override
+  void sendMessage(Message message) {
     if (_selfSocket == null) return;
-    _selfSocket!.write(message);
+    _selfSocket!.write(message.content);
   }
 }
