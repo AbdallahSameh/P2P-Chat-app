@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:p2p_chat_app/data%20models/message.dart';
-import 'package:p2p_chat_app/interface/chat_type.dart';
+import 'package:p2p_chat_app/interfaces/chat_type.dart';
 import 'package:p2p_chat_app/provider/chat_provider.dart';
 
 class Host implements ChatType {
@@ -12,8 +12,14 @@ class Host implements ChatType {
   List<Socket> clients = [];
   Socket? _selfSocket;
   String deviceIp = 'Not Connected';
+  final String roomName;
 
-  Host({required this.chatProvider, this.udpPort = 2222, this.tcpPort = 5050});
+  Host({
+    required this.chatProvider,
+    required this.roomName,
+    this.udpPort = 2222,
+    this.tcpPort = 5050,
+  });
 
   @override
   Future<void> start() async {
@@ -40,7 +46,7 @@ class Host implements ChatType {
             );
 
             rawSocket.send(
-              utf8.encode('CHAT_SERVER_IP: $serverIp'),
+              utf8.encode('CHAT_SERVER_IP: $serverIp ROOM_NAME: $roomName'),
               dg.address,
               dg.port,
             );

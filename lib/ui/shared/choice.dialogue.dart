@@ -1,0 +1,95 @@
+import 'package:flutter/material.dart';
+import 'package:p2p_chat_app/ui/chat_screen.dart';
+import 'package:p2p_chat_app/ui/shared/custom_text_form_field.dart';
+
+class ChoiceDialogue extends StatefulWidget {
+  final int choice;
+  const ChoiceDialogue({super.key, required this.choice});
+
+  @override
+  State<ChoiceDialogue> createState() => _ChoiceDialogueState();
+}
+
+class _ChoiceDialogueState extends State<ChoiceDialogue> {
+  late final GlobalKey<FormState> formKey;
+  late TextEditingController controller1, controller2, controller3;
+  @override
+  void initState() {
+    super.initState();
+    formKey = GlobalKey<FormState>();
+    controller1 = TextEditingController();
+    controller2 = TextEditingController();
+    controller3 = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    controller1.dispose();
+    controller2.dispose();
+    controller3.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      child: Container(
+        width: MediaQuery.of(context).size.width * 0.6,
+        child: Padding(
+          padding: EdgeInsets.all(30),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            spacing: 40,
+            children: [
+              Text('Create Chat Room'),
+              Form(
+                key: formKey,
+                child: Column(
+                  spacing: 20,
+                  children: [
+                    CustomTextFormField(
+                      controller: controller1,
+                      labelText: 'Username',
+                      hintText: 'Enter Username',
+                    ),
+                    if (widget.choice == 1) ...[
+                      CustomTextFormField(
+                        controller: controller2,
+                        labelText: 'Room name',
+                        hintText: 'Enter Room name',
+                      ),
+                      CustomTextFormField(
+                        controller: controller3,
+                        labelText: 'Password',
+                        hintText: 'Enter Password',
+                      ),
+                    ],
+
+                    ElevatedButton(
+                      onPressed: () {
+                        if (formKey.currentState!.validate()) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => ChatScreen(
+                                choice: widget.choice,
+                                roomName: controller2.text,
+                              ),
+                            ),
+                          );
+                        }
+                      },
+                      child: Text('Enter'),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

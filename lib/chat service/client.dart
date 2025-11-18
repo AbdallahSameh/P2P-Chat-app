@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:p2p_chat_app/data%20models/message.dart';
-import 'package:p2p_chat_app/interface/chat_type.dart';
+import 'package:p2p_chat_app/interfaces/chat_type.dart';
 import 'package:p2p_chat_app/provider/chat_provider.dart';
 
 class Client implements ChatType {
@@ -12,6 +12,7 @@ class Client implements ChatType {
   String? serverIp;
   ChatProvider chatProvider;
   String deviceIp = '';
+  String? roomName;
 
   Client({
     required this.chatProvider,
@@ -21,13 +22,15 @@ class Client implements ChatType {
 
   @override
   start() async {
-    deviceIp = await printDeviceIPs();
+    deviceIp = await DeviceIPs();
     serverIp = await _getHostIp();
     if (serverIp == null) {
       chatProvider.addSystemNotification('no Host found');
       return;
     }
 
+    // to do
+    // the room name is stored in the variable make _connectToHost global and start returns the room name to the room_chooser.dart
     _connectToHost(serverIp, tcpPort);
   }
 
@@ -47,7 +50,8 @@ class Client implements ChatType {
         if (dg != null) {
           final message = utf8.decode(dg.data);
           if (message.startsWith('CHAT_SERVER_IP:')) {
-            final foundIp = message.split(' ').last.trim();
+            final foundIp = message.split(' ')[1].trim();
+            roomName = message.split(' ')[3].trim();
             completer.complete(foundIp);
             rawSocket.close();
           }
@@ -112,7 +116,7 @@ class Client implements ChatType {
     socket = null;
   }
 
-  Future<String> printDeviceIPs() async {
+  Future<String> DeviceIPs() async {
     final interfaces = await NetworkInterface.list(
       includeLoopback: false,
       type: InternetAddressType.IPv4,
