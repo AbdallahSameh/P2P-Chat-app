@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:p2p_chat_app/ui/chat_screen.dart';
+import 'package:p2p_chat_app/ui/room_chooser.dart';
 import 'package:p2p_chat_app/ui/shared/custom_text_form_field.dart';
 
 class ChoiceDialogue extends StatefulWidget {
@@ -70,15 +71,22 @@ class _ChoiceDialogueState extends State<ChoiceDialogue> {
                     ElevatedButton(
                       onPressed: () {
                         if (formKey.currentState!.validate()) {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => ChatScreen(
-                                choice: widget.choice,
-                                roomName: controller2.text,
+                          if (widget.choice == 1) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => ChatScreen(
+                                  choice: widget.choice,
+                                  roomName: controller2.text,
+                                ),
                               ),
-                            ),
-                          );
+                            );
+                          } else {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (_) => HostChooser()),
+                            );
+                          }
                         }
                       },
                       child: Text('Enter'),

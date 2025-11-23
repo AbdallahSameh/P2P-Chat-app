@@ -10,7 +10,15 @@ import 'package:provider/provider.dart';
 class ChatScreen extends StatefulWidget {
   final int choice;
   final String? roomName;
-  const ChatScreen({super.key, required this.choice, this.roomName});
+  final String? serverIp;
+  final Client? client;
+  const ChatScreen({
+    super.key,
+    required this.choice,
+    this.roomName,
+    this.serverIp,
+    this.client,
+  });
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -24,15 +32,14 @@ class _ChatScreenState extends State<ChatScreen> {
   void initState() {
     super.initState();
     chatProvider = context.read<ChatProvider>();
+    print(widget.choice);
     if (widget.choice == 1) {
       final host = Host(chatProvider: chatProvider, roomName: widget.roomName!);
       chatType = host;
+      chatType.start();
     } else {
-      final client = Client(chatProvider: chatProvider);
-      chatType = client;
+      chatType = widget.client!;
     }
-
-    chatType.start();
   }
 
   @override

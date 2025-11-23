@@ -4,6 +4,7 @@ import 'package:p2p_chat_app/data%20models/message.dart';
 class ChatProvider extends ChangeNotifier {
   List<Message> _messages = [];
   List<String> _systemNotifications = [];
+  List<Map<String, dynamic>> chatRooms = [];
 
   List<Message> get messages => _messages;
   List<String> get systemNotifications => _systemNotifications;
@@ -15,6 +16,11 @@ class ChatProvider extends ChangeNotifier {
 
   void addSystemNotification(notification) {
     _systemNotifications.add(notification);
+    notifyListeners();
+  }
+
+  void addChatRoom(Map<String, dynamic> room) {
+    chatRooms.add(room);
     notifyListeners();
   }
 }

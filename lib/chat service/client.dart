@@ -12,7 +12,6 @@ class Client implements ChatType {
   String? serverIp;
   ChatProvider chatProvider;
   String deviceIp = '';
-  String? roomName;
 
   Client({
     required this.chatProvider,
@@ -22,16 +21,8 @@ class Client implements ChatType {
 
   @override
   start() async {
-    deviceIp = await DeviceIPs();
-    serverIp = await _getHostIp();
-    if (serverIp == null) {
-      chatProvider.addSystemNotification('no Host found');
-      return;
-    }
-
-    // to do
-    // the room name is stored in the variable make _connectToHost global and start returns the room name to the room_chooser.dart
-    _connectToHost(serverIp, tcpPort);
+    deviceIp = await deviceIPs();
+    await _getHostIp();
   }
 
   _getHostIp() async {
@@ -51,25 +42,22 @@ class Client implements ChatType {
           final message = utf8.decode(dg.data);
           if (message.startsWith('CHAT_SERVER_IP:')) {
             final foundIp = message.split(' ')[1].trim();
-            roomName = message.split(' ')[3].trim();
-            completer.complete(foundIp);
-            rawSocket.close();
+            final roomName = message.split(' ')[3].trim();
+            chatProvider.addChatRoom({
+              'foundIp': foundIp,
+              'roomName': roomName,
+            });
           }
         }
       }
     });
-
     Future.delayed(Duration(seconds: 3), () {
-      if (!completer.isCompleted) {
-        completer.complete(null);
-        rawSocket.close();
-      }
+      rawSocket.close();
+      completer.complete();
     });
-
-    return completer.future;
   }
 
-  _connectToHost(serverIp, tcpPort) async {
+  connectToHost(serverIp, [tcpPort = 5050]) async {
     try {
       socket = await Socket.connect(serverIp, tcpPort);
       chatProvider.addSystemNotification(
@@ -116,7 +104,7 @@ class Client implements ChatType {
     socket = null;
   }
 
-  Future<String> DeviceIPs() async {
+  Future<String> deviceIPs() async {
     final interfaces = await NetworkInterface.list(
       includeLoopback: false,
       type: InternetAddressType.IPv4,

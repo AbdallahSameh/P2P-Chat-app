@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:p2p_chat_app/ui/chat_screen.dart';
 import 'package:p2p_chat_app/ui/shared/choice.dialogue.dart';
 
 class ServerClientChooser extends StatefulWidget {
