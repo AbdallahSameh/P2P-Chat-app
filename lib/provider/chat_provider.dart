@@ -1,13 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:p2p_chat_app/data%20models/message.dart';
+import 'package:p2p_chat_app/data%20models/room.dart';
+import 'package:p2p_chat_app/data%20models/user.dart';
 
 class ChatProvider extends ChangeNotifier {
+  User? user;
   List<Message> _messages = [];
   List<String> _systemNotifications = [];
-  List<Map<String, dynamic>> chatRooms = [];
+  List<Room> chatRooms = [];
 
   List<Message> get messages => _messages;
   List<String> get systemNotifications => _systemNotifications;
+
+  void addUser(User user) {
+    this.user = user;
+    notifyListeners();
+  }
 
   void addMessage(message) {
     _messages.add(message);
@@ -19,7 +27,7 @@ class ChatProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addChatRoom(Map<String, dynamic> room) {
+  void addChatRoom(Room room) {
     chatRooms.add(room);
     notifyListeners();
   }

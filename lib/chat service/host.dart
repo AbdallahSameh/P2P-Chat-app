@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:p2p_chat_app/data%20models/message.dart';
+import 'package:p2p_chat_app/data%20models/user.dart';
 import 'package:p2p_chat_app/interfaces/chat_type.dart';
 import 'package:p2p_chat_app/provider/chat_provider.dart';
 
@@ -11,8 +12,8 @@ class Host implements ChatType {
   int tcpPort;
   List<Socket> clients = [];
   Socket? _selfSocket;
-  String deviceIp = 'Not Connected';
   final String roomName;
+  User user = User(username: '', userIp: 'Not Connected');
 
   Host({
     required this.chatProvider,
@@ -80,7 +81,8 @@ class Host implements ChatType {
 
   _handleMessage(Socket client, data) {
     final message = Message(
-      sender: client.remoteAddress.address,
+      senderip: client.remoteAddress.address,
+      senderUsername: user.username,
       content: utf8.decode(data),
     );
     chatProvider.addMessage(message);
@@ -118,8 +120,8 @@ class Host implements ChatType {
   }
 
   _selfConnect() async {
-    deviceIp = await _getLocalIp();
-    _selfSocket = await Socket.connect(deviceIp, tcpPort);
+    user.userIp = await _getLocalIp();
+    _selfSocket = await Socket.connect(user.userIp, tcpPort);
 
     if (_selfSocket == null) {
       chatProvider.addSystemNotification('Failed to connect the host');

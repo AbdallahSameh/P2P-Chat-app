@@ -9,12 +9,13 @@ import 'package:provider/provider.dart';
 
 class ChatScreen extends StatefulWidget {
   final int choice;
-  final String? roomName;
+  final String? roomName, username;
   final String? serverIp;
   final Client? client;
   const ChatScreen({
     super.key,
     required this.choice,
+    required this.username,
     this.roomName,
     this.serverIp,
     this.client,
@@ -32,9 +33,13 @@ class _ChatScreenState extends State<ChatScreen> {
   void initState() {
     super.initState();
     chatProvider = context.read<ChatProvider>();
-    print(widget.choice);
+    debugPrint(widget.username);
     if (widget.choice == 1) {
-      final host = Host(chatProvider: chatProvider, roomName: widget.roomName!);
+      final host = Host(
+        chatProvider: chatProvider,
+        username: widget.username!,
+        roomName: widget.roomName!,
+      );
       chatType = host;
       chatType.start();
     } else {
@@ -77,8 +82,9 @@ class _ChatScreenState extends State<ChatScreen> {
                 }
                 chatType.sendMessage(
                   Message(
-                    sender: chatType.deviceIp,
-                    content: 'Hello ${chatType.deviceIp}',
+                    senderip: chatType.user.userIp,
+                    senderUsername: widget.username!,
+                    content: 'Hello ${chatType.user.userIp}',
                   ),
                 );
               },

@@ -5,7 +5,8 @@ import 'package:p2p_chat_app/ui/chat_screen.dart';
 import 'package:provider/provider.dart';
 
 class HostChooser extends StatefulWidget {
-  const HostChooser({super.key});
+  final String username;
+  const HostChooser({super.key, required this.username});
 
   @override
   State<HostChooser> createState() => _HostChooserState();
@@ -21,16 +22,14 @@ class _HostChooserState extends State<HostChooser> {
   void initState() {
     super.initState();
     chatProvider = context.read<ChatProvider>();
-    client = Client(chatProvider: chatProvider);
+    client = Client(chatProvider: chatProvider, username: widget.username);
     client.start();
   }
 
   @override
   Widget build(BuildContext context) {
     rooms = context.watch<ChatProvider>().chatRooms;
-    for (int i = 0; i < rooms.length; i++) {
-      print(rooms[i]);
-    }
+
     return Scaffold(
       body: Center(
         child: Column(
@@ -67,7 +66,11 @@ class _HostChooserState extends State<HostChooser> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => ChatScreen(choice: 2, client: client),
+                    builder: (_) => ChatScreen(
+                      choice: 2,
+                      username: widget.username,
+                      client: client,
+                    ),
                   ),
                 );
               },

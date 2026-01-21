@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:p2p_chat_app/data%20models/user.dart';
+import 'package:p2p_chat_app/provider/chat_provider.dart';
 import 'package:p2p_chat_app/ui/chat_screen.dart';
 import 'package:p2p_chat_app/ui/room_chooser.dart';
 import 'package:p2p_chat_app/ui/shared/custom_text_form_field.dart';
+import 'package:provider/provider.dart';
 
 class ChoiceDialogue extends StatefulWidget {
   final int choice;
@@ -77,14 +80,21 @@ class _ChoiceDialogueState extends State<ChoiceDialogue> {
                               MaterialPageRoute(
                                 builder: (_) => ChatScreen(
                                   choice: widget.choice,
+                                  username: controller1.text,
                                   roomName: controller2.text,
                                 ),
                               ),
                             );
                           } else {
+                            context.read<ChatProvider>().addUser(
+                              User(username: controller1.text, userIp: ''),
+                            );
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (_) => HostChooser()),
+                              MaterialPageRoute(
+                                builder: (_) =>
+                                    HostChooser(username: controller1.text),
+                              ),
                             );
                           }
                         }

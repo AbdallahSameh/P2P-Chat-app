@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:p2p_chat_app/data%20models/message.dart';
+import 'package:p2p_chat_app/data%20models/room.dart';
+import 'package:p2p_chat_app/data%20models/user.dart';
 import 'package:p2p_chat_app/interfaces/chat_type.dart';
 import 'package:p2p_chat_app/provider/chat_provider.dart';
 
@@ -11,7 +13,7 @@ class Client implements ChatType {
   Socket? socket;
   String? serverIp;
   ChatProvider chatProvider;
-  String deviceIp = '';
+  User user = User(username: '', userIp: '');
 
   Client({
     required this.chatProvider,
@@ -21,7 +23,7 @@ class Client implements ChatType {
 
   @override
   start() async {
-    deviceIp = await deviceIPs();
+    user.userIp = await deviceIPs();
     await _getHostIp();
   }
 
@@ -43,10 +45,8 @@ class Client implements ChatType {
           if (message.startsWith('CHAT_SERVER_IP:')) {
             final foundIp = message.split(' ')[1].trim();
             final roomName = message.split(' ')[3].trim();
-            chatProvider.addChatRoom({
-              'foundIp': foundIp,
-              'roomName': roomName,
-            });
+            Room room = Room(roomName: roomName, hostIp: foundIp);
+            chatProvider.addChatRoom(room);
           }
         }
       }
@@ -67,7 +67,8 @@ class Client implements ChatType {
       socket!.listen(
         (data) {
           final message = Message(
-            sender: socket!.remoteAddress.address,
+            senderip: socket!.remoteAddress.address,
+            senderUsername: user.username,
             content: utf8.decode(data),
           );
 
