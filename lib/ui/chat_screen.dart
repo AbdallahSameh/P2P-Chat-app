@@ -9,17 +9,8 @@ import 'package:provider/provider.dart';
 
 class ChatScreen extends StatefulWidget {
   final int choice;
-  final String? roomName, username;
-  final String? serverIp;
   final Client? client;
-  const ChatScreen({
-    super.key,
-    required this.choice,
-    required this.username,
-    this.roomName,
-    this.serverIp,
-    this.client,
-  });
+  const ChatScreen({super.key, required this.choice, this.client});
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -33,13 +24,8 @@ class _ChatScreenState extends State<ChatScreen> {
   void initState() {
     super.initState();
     chatProvider = context.read<ChatProvider>();
-    debugPrint(widget.username);
     if (widget.choice == 1) {
-      final host = Host(
-        chatProvider: chatProvider,
-        username: widget.username!,
-        roomName: widget.roomName!,
-      );
+      final host = Host(chatProvider: chatProvider);
       chatType = host;
       chatType.start();
     } else {
@@ -76,15 +62,14 @@ class _ChatScreenState extends State<ChatScreen> {
           Center(
             child: ElevatedButton(
               onPressed: () {
-                for (var notification
-                    in context.read<ChatProvider>().systemNotifications) {
+                for (var notification in chatProvider.systemNotifications) {
                   print('Notification: $notification');
                 }
                 chatType.sendMessage(
                   Message(
-                    senderip: chatType.user.userIp,
-                    senderUsername: widget.username!,
-                    content: 'Hello ${chatType.user.userIp}',
+                    senderip: chatProvider.user!.userIp,
+                    senderUsername: chatProvider.user!.username,
+                    content: 'Hello ${chatProvider.user!.userIp}',
                   ),
                 );
               },

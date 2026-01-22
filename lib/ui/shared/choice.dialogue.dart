@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:p2p_chat_app/data%20models/room.dart';
 import 'package:p2p_chat_app/data%20models/user.dart';
 import 'package:p2p_chat_app/provider/chat_provider.dart';
 import 'package:p2p_chat_app/ui/chat_screen.dart';
@@ -74,27 +75,28 @@ class _ChoiceDialogueState extends State<ChoiceDialogue> {
                     ElevatedButton(
                       onPressed: () {
                         if (formKey.currentState!.validate()) {
+                          context.read<ChatProvider>().addUser(
+                            User(username: controller1.text, userIp: ''),
+                          );
+
                           if (widget.choice == 1) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => ChatScreen(
-                                  choice: widget.choice,
-                                  username: controller1.text,
-                                  roomName: controller2.text,
-                                ),
-                              ),
+                            Room room = Room(
+                              roomName: controller2.text,
+                              hostIp: '',
                             );
-                          } else {
-                            context.read<ChatProvider>().addUser(
-                              User(username: controller1.text, userIp: ''),
-                            );
+                            room.password = controller3.text;
+                            context.read<ChatProvider>().addChatRoom(room);
                             Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (_) =>
-                                    HostChooser(username: controller1.text),
+                                    ChatScreen(choice: widget.choice),
                               ),
+                            );
+                          } else {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (_) => HostChooser()),
                             );
                           }
                         }

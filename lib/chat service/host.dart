@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:p2p_chat_app/data%20models/message.dart';
+import 'package:p2p_chat_app/data%20models/room.dart';
 import 'package:p2p_chat_app/data%20models/user.dart';
 import 'package:p2p_chat_app/interfaces/chat_type.dart';
 import 'package:p2p_chat_app/provider/chat_provider.dart';
@@ -12,18 +13,15 @@ class Host implements ChatType {
   int tcpPort;
   List<Socket> clients = [];
   Socket? _selfSocket;
-  final String roomName;
+  Room? room;
   User user = User(username: '', userIp: 'Not Connected');
 
-  Host({
-    required this.chatProvider,
-    required this.roomName,
-    this.udpPort = 2222,
-    this.tcpPort = 5050,
-  });
+  Host({required this.chatProvider, this.udpPort = 2222, this.tcpPort = 5050});
 
   @override
   Future<void> start() async {
+    user = chatProvider.user!;
+    room = chatProvider.chatRooms[0];
     _udpResponder(udpPort);
     await _startTcpServer(tcpPort);
     await _selfConnect();
@@ -47,7 +45,9 @@ class Host implements ChatType {
             );
 
             rawSocket.send(
-              utf8.encode('CHAT_SERVER_IP: $serverIp ROOM_NAME: $roomName'),
+              utf8.encode(
+                'CHAT_SERVER_IP: $serverIp ROOM_NAME: ${room!.roomName}',
+              ),
               dg.address,
               dg.port,
             );
@@ -64,13 +64,27 @@ class Host implements ChatType {
     );
 
     server.listen((client) {
+      bool authenticated = false;
+
       clients.add(client);
+
       chatProvider.addSystemNotification(
         'Client connected: ${client.remoteAddress.address}',
       );
 
       client.listen(
         (data) {
+          if (!authenticated) {
+            if (utf8.decode(data) != room!.password) {
+              chatProvider.addSystemNotification('Invalid Password');
+
+              client.close();
+              return;
+            }
+            authenticated = true;
+            return;
+          }
+
           _handleMessage(client, data);
         },
         onDone: () => _removeClient(client),
@@ -122,6 +136,7 @@ class Host implements ChatType {
   _selfConnect() async {
     user.userIp = await _getLocalIp();
     _selfSocket = await Socket.connect(user.userIp, tcpPort);
+    _selfSocket!.write(room!.password);
 
     if (_selfSocket == null) {
       chatProvider.addSystemNotification('Failed to connect the host');

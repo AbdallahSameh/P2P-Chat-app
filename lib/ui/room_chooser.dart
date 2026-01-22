@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:p2p_chat_app/chat%20service/client.dart';
+import 'package:p2p_chat_app/data%20models/room.dart';
 import 'package:p2p_chat_app/provider/chat_provider.dart';
-import 'package:p2p_chat_app/ui/chat_screen.dart';
+import 'package:p2p_chat_app/ui/shared/password_dialogue.dart';
 import 'package:provider/provider.dart';
 
 class HostChooser extends StatefulWidget {
-  final String username;
-  const HostChooser({super.key, required this.username});
+  const HostChooser({super.key});
 
   @override
   State<HostChooser> createState() => _HostChooserState();
@@ -22,13 +22,13 @@ class _HostChooserState extends State<HostChooser> {
   void initState() {
     super.initState();
     chatProvider = context.read<ChatProvider>();
-    client = Client(chatProvider: chatProvider, username: widget.username);
+    client = Client(chatProvider: chatProvider);
     client.start();
   }
 
   @override
   Widget build(BuildContext context) {
-    rooms = context.watch<ChatProvider>().chatRooms;
+    List<Room> rooms = context.watch<ChatProvider>().chatRooms;
 
     return Scaffold(
       body: Center(
@@ -45,7 +45,7 @@ class _HostChooserState extends State<HostChooser> {
                     ),
                   ),
                   child: ListTile(
-                    title: Text(rooms[index]['roomName']),
+                    title: Text(rooms[index].roomName),
                     onTap: () => setState(() {
                       choice = index;
                     }),
@@ -62,15 +62,13 @@ class _HostChooserState extends State<HostChooser> {
                 if (choice == -1) {
                   return;
                 }
-                await client.connectToHost(rooms[choice]['foundIp']);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => ChatScreen(
-                      choice: 2,
-                      username: widget.username,
-                      client: client,
-                    ),
+
+                showDialog(
+                  context: context,
+                  builder: (_) => PasswordDialogue(
+                    rooms: rooms,
+                    choice: choice,
+                    client: client,
                   ),
                 );
               },

@@ -23,6 +23,7 @@ class Client implements ChatType {
 
   @override
   start() async {
+    user = chatProvider.user!;
     user.userIp = await deviceIPs();
     await _getHostIp();
   }
@@ -57,12 +58,13 @@ class Client implements ChatType {
     });
   }
 
-  connectToHost(serverIp, [tcpPort = 5050]) async {
+  connectToHost(serverIp, password, [tcpPort = 5050]) async {
     try {
       socket = await Socket.connect(serverIp, tcpPort);
       chatProvider.addSystemNotification(
         'Connected to host: $serverIp:$tcpPort',
       );
+      socket!.write(password);
 
       socket!.listen(
         (data) {
