@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:p2p_chat_app/data%20models/message.dart';
 import 'package:p2p_chat_app/data%20models/room.dart';
 import 'package:p2p_chat_app/data%20models/user.dart';
@@ -37,8 +36,7 @@ class Host implements ChatType {
       if (event == RawSocketEvent.read) {
         final dg = rawSocket.receive();
         if (dg != null) {
-          final message = utf8.decode(dg.data);
-          if (message == 'ARE_YOU_CHAT_HOST') {
+          if (utf8.decode(dg.data) == 'ARE_YOU_CHAT_HOST') {
             final serverIp = await _getLocalIp();
             chatProvider.addSystemNotification(
               'Discovery request from: ${dg.address.address}',
@@ -74,8 +72,9 @@ class Host implements ChatType {
 
       client.listen(
         (data) {
+          final message = Message.fromJson(jsonDecode(utf8.decode(data)));
           if (!authenticated) {
-            if (utf8.decode(data) != room!.password) {
+            if (message.content != room!.password) {
               chatProvider.addSystemNotification('Invalid Password');
 
               client.close();
@@ -85,7 +84,7 @@ class Host implements ChatType {
             return;
           }
 
-          _handleMessage(client, data);
+          _handleMessage(client, message);
         },
         onDone: () => _removeClient(client),
         onError: (error, stackTrace) => _removeClient(client),
@@ -94,11 +93,7 @@ class Host implements ChatType {
   }
 
   _handleMessage(Socket client, data) {
-    final message = Message(
-      senderip: client.remoteAddress.address,
-      senderUsername: user.username,
-      content: utf8.decode(data),
-    );
+    final message = data;
     chatProvider.addMessage(message);
     chatProvider.addSystemNotification('A Message Received');
     _broadcast(message, client);
@@ -114,7 +109,7 @@ class Host implements ChatType {
   _broadcast(Message message, sender) {
     for (var client in clients) {
       if (client != sender) {
-        client.write(message.content);
+        client.write(jsonEncode(message.toJson()));
       }
     }
   }
@@ -136,8 +131,14 @@ class Host implements ChatType {
   _selfConnect() async {
     user.userIp = await _getLocalIp();
     _selfSocket = await Socket.connect(user.userIp, tcpPort);
-    _selfSocket!.write(room!.password);
 
+    sendMessage(
+      Message(
+        senderip: user.userIp,
+        senderUsername: user.username,
+        content: room!.password,
+      ),
+    );
     if (_selfSocket == null) {
       chatProvider.addSystemNotification('Failed to connect the host');
       return;
@@ -147,6 +148,6 @@ class Host implements ChatType {
   @override
   void sendMessage(Message message) {
     if (_selfSocket == null) return;
-    _selfSocket!.write(message.content);
+    _selfSocket!.write(jsonEncode(message.toJson()));
   }
 }

@@ -1,11 +1,27 @@
 class Message {
   String senderip, senderUsername, content;
-  late String sendTime;
+  String? sendTime;
 
   Message({
     required this.senderip,
     required this.senderUsername,
     required this.content,
-    sendTime = DateTime.now,
-  });
+    sendTime,
+  }) : sendTime = sendTime ?? DateTime.now().toIso8601String();
+
+  factory Message.fromJson(Map<String, dynamic> message) {
+    return Message(
+      senderip: message['senderip'],
+      senderUsername: message['senderUsername'],
+      content: message['content'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'senderip': senderip,
+      'senderUsername': senderUsername,
+      'content': content,
+    };
+  }
 }

@@ -64,15 +64,16 @@ class Client implements ChatType {
       chatProvider.addSystemNotification(
         'Connected to host: $serverIp:$tcpPort',
       );
-      socket!.write(password);
+      Message auth = Message(
+        senderip: socket!.remoteAddress.address,
+        senderUsername: user.username,
+        content: password,
+      );
+      socket!.write(jsonEncode(auth.toJson()));
 
       socket!.listen(
         (data) {
-          final message = Message(
-            senderip: socket!.remoteAddress.address,
-            senderUsername: user.username,
-            content: utf8.decode(data),
-          );
+          final message = Message.fromJson(jsonDecode(utf8.decode(data)));
 
           chatProvider.addMessage(message);
           chatProvider.addSystemNotification('A Message Received');
@@ -99,7 +100,7 @@ class Client implements ChatType {
     }
 
     chatProvider.addMessage(message);
-    socket!.write(message.content);
+    socket!.write(jsonEncode(message.toJson()));
   }
 
   void disconnect() {

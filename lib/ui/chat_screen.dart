@@ -46,7 +46,13 @@ class _ChatScreenState extends State<ChatScreen> {
                 reverse: true,
                 itemBuilder: (_, index) {
                   return ListTile(
+                    leading: Text(
+                      messages[messages.length - 1 - index].senderUsername,
+                    ),
                     title: Text(messages[messages.length - 1 - index].content),
+                    trailing: Text(
+                      messages[messages.length - 1 - index].sendTime ?? '0',
+                    ),
                   );
                   // return ChatBubble();
                 },
