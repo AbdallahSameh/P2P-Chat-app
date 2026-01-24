@@ -19,6 +19,7 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   late final ChatType chatType;
   late final ChatProvider chatProvider;
+  late final TextEditingController typingFieldController;
 
   @override
   void initState() {
@@ -27,10 +28,20 @@ class _ChatScreenState extends State<ChatScreen> {
     if (widget.choice == 1) {
       final host = Host(chatProvider: chatProvider);
       chatType = host;
-      chatType.start();
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        await chatType.start();
+      });
     } else {
       chatType = widget.client!;
     }
+
+    typingFieldController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    typingFieldController.dispose();
+    super.dispose();
   }
 
   @override
@@ -62,24 +73,43 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
           ),
           // the chat utils
-          // Container(child: Row()),
 
           // test
-          Center(
-            child: ElevatedButton(
-              onPressed: () {
-                for (var notification in chatProvider.systemNotifications) {
-                  print('Notification: $notification');
-                }
-                chatType.sendMessage(
-                  Message(
-                    senderip: chatProvider.user!.userIp,
-                    senderUsername: chatProvider.user!.username,
-                    content: 'Hello ${chatProvider.user!.userIp}',
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      controller: typingFieldController,
+                      decoration: InputDecoration(hintText: 'Message'),
+                    ),
                   ),
-                );
-              },
-              child: Text('Send Message'),
+                  ElevatedButton(
+                    onPressed: () {
+                      if (typingFieldController.text == '' ||
+                          typingFieldController.text.isEmpty) {
+                        return;
+                      }
+                      for (var notification
+                          in chatProvider.systemNotifications) {
+                        print('Notification: $notification');
+                      }
+                      chatType.sendMessage(
+                        Message(
+                          senderip: chatProvider.user!.userIp,
+                          senderUsername: chatProvider.user!.username,
+                          content: typingFieldController.text,
+                        ),
+                      );
+
+                      typingFieldController.text = '';
+                    },
+                    child: Text('Send Message'),
+                  ),
+                ],
+              ),
             ),
           ),
         ],

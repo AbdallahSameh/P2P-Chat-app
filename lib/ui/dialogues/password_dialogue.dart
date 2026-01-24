@@ -5,7 +5,7 @@ import 'package:p2p_chat_app/ui/chat_screen.dart';
 import 'package:p2p_chat_app/ui/shared/custom_text_form_field.dart';
 
 class PasswordDialogue extends StatefulWidget {
-  final List<dynamic> rooms;
+  final List<Room> rooms;
   final int choice;
   final Client client;
   const PasswordDialogue({
@@ -44,6 +44,7 @@ class _PasswordDialogueState extends State<PasswordDialogue> {
         child: Form(
           key: _formKey,
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
               CustomTextFormField(
                 controller: controller,

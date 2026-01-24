@@ -4,6 +4,7 @@ import 'package:p2p_chat_app/data%20models/user.dart';
 import 'package:p2p_chat_app/provider/chat_provider.dart';
 import 'package:p2p_chat_app/ui/chat_screen.dart';
 import 'package:p2p_chat_app/ui/room_chooser.dart';
+import 'package:p2p_chat_app/ui/shared/custom_ink_well.dart';
 import 'package:p2p_chat_app/ui/shared/custom_text_form_field.dart';
 import 'package:provider/provider.dart';
 
@@ -71,6 +72,41 @@ class _ChoiceDialogueState extends State<ChoiceDialogue> {
                         hintText: 'Enter Password',
                       ),
                     ],
+
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: CustomInkWell(
+                              height: 50,
+                              index: 0,
+                              text: 'Hotspot',
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: CustomInkWell(
+                              height: 50,
+                              index: 1,
+                              text: 'Wifi',
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: CustomInkWell(
+                              height: 50,
+                              index: 2,
+                              text: 'Wifi Direct',
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
 
                     ElevatedButton(
                       onPressed: () {

@@ -11,7 +11,6 @@ class Host implements ChatType {
   int udpPort;
   int tcpPort;
   List<Socket> clients = [];
-  Socket? _selfSocket;
   Room? room;
   User user = User(username: '', userIp: 'Not Connected');
 
@@ -23,7 +22,6 @@ class Host implements ChatType {
     room = chatProvider.chatRooms[0];
     _udpResponder(udpPort);
     await _startTcpServer(tcpPort);
-    await _selfConnect();
   }
 
   Future<void> _udpResponder(udpPort) async {
@@ -48,6 +46,9 @@ class Host implements ChatType {
               ),
               dg.address,
               dg.port,
+            );
+            chatProvider.addSystemNotification(
+              'RoomInfo: CHAT_SERVER_IP: $serverIp ROOM_NAME: ${room!.roomName} was sent to ${dg.address.address}',
             );
           }
         }
@@ -96,7 +97,6 @@ class Host implements ChatType {
     final message = data;
     chatProvider.addMessage(message);
     chatProvider.addSystemNotification('A Message Received');
-    _broadcast(message, client);
   }
 
   _removeClient(Socket client) {
@@ -106,11 +106,9 @@ class Host implements ChatType {
     clients.remove(client);
   }
 
-  _broadcast(Message message, sender) {
+  _broadcast(Message message) {
     for (var client in clients) {
-      if (client != sender) {
-        client.write(jsonEncode(message.toJson()));
-      }
+      client.write(jsonEncode(message.toJson()));
     }
   }
 
@@ -121,33 +119,25 @@ class Host implements ChatType {
     );
 
     for (var interface in interfaces) {
-      for (var addr in interface.addresses) {
-        return addr.address;
+      if (chatProvider.connectivityType == 0) {
+        for (var addr in interface.addresses) {
+          return addr.address;
+        }
+      } else if (chatProvider.connectivityType == 1) {
+        if (interface.name.toLowerCase().contains('wi-fi') ||
+            interface.name.toLowerCase().contains('wlan')) {
+          for (var addr in interface.addresses) {
+            return addr.address;
+          }
+        }
       }
     }
     return 'Not Connected';
   }
 
-  _selfConnect() async {
-    user.userIp = await _getLocalIp();
-    _selfSocket = await Socket.connect(user.userIp, tcpPort);
-
-    sendMessage(
-      Message(
-        senderip: user.userIp,
-        senderUsername: user.username,
-        content: room!.password,
-      ),
-    );
-    if (_selfSocket == null) {
-      chatProvider.addSystemNotification('Failed to connect the host');
-      return;
-    }
-  }
-
   @override
   void sendMessage(Message message) {
-    if (_selfSocket == null) return;
-    _selfSocket!.write(jsonEncode(message.toJson()));
+    chatProvider.addMessage(message);
+    _broadcast(message);
   }
 }

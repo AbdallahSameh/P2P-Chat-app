@@ -25,10 +25,10 @@ class Client implements ChatType {
   start() async {
     user = chatProvider.user!;
     user.userIp = await deviceIPs();
-    await _getHostIp();
+    await getHostIp();
   }
 
-  _getHostIp() async {
+  getHostIp() async {
     final rawSocket = await RawDatagramSocket.bind(InternetAddress.anyIPv4, 0);
     rawSocket.broadcastEnabled = true;
     final message = utf8.encode('ARE_YOU_CHAT_HOST');

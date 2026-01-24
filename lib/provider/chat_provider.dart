@@ -5,6 +5,7 @@ import 'package:p2p_chat_app/data%20models/user.dart';
 
 class ChatProvider extends ChangeNotifier {
   User? user;
+  int connectivityType = -1;
   List<Message> _messages = [];
   List<String> _systemNotifications = [];
   List<Room> chatRooms = [];
@@ -29,6 +30,11 @@ class ChatProvider extends ChangeNotifier {
 
   void addChatRoom(Room room) {
     chatRooms.add(room);
+    notifyListeners();
+  }
+
+  void addConnectivityType(int choice) {
+    connectivityType = choice;
     notifyListeners();
   }
 }
