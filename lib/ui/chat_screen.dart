@@ -35,6 +35,7 @@ class _ChatScreenState extends State<ChatScreen> {
       chatType = widget.client!;
     }
 
+    chatProvider.deleteMessages();
     typingFieldController = TextEditingController();
   }
 
@@ -48,71 +49,121 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     final List<Message> messages = context.watch<ChatProvider>().messages;
     return Scaffold(
-      body: Column(
-        children: [
-          // the chat container
-          Expanded(
-            child: Container(
-              child: ListView.separated(
-                reverse: true,
-                itemBuilder: (_, index) {
-                  return ListTile(
-                    leading: Text(
-                      messages[messages.length - 1 - index].senderUsername,
-                    ),
-                    title: Text(messages[messages.length - 1 - index].content),
-                    trailing: Text(
-                      messages[messages.length - 1 - index].sendTime ?? '0',
-                    ),
-                  );
-                  // return ChatBubble();
-                },
-                separatorBuilder: (_, index) => SizedBox(height: 10),
-                itemCount: messages.length,
+      backgroundColor: Color(0xff1a1a24),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            // the chat container
+            Expanded(
+              child: Container(
+                child: ListView.separated(
+                  reverse: true,
+                  itemBuilder: (_, index) {
+                    return ListTile(
+                      leading: Text(
+                        messages[messages.length - 1 - index].senderUsername,
+                      ),
+                      title: Text(
+                        messages[messages.length - 1 - index].content,
+                      ),
+                      trailing: Text(
+                        messages[messages.length - 1 - index].sendTime ?? '0',
+                      ),
+                    );
+                    // return ChatBubble();
+                  },
+                  separatorBuilder: (_, index) => SizedBox(height: 10),
+                  itemCount: messages.length,
+                ),
               ),
             ),
-          ),
-          // the chat utils
 
-          // test
-          SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextFormField(
-                      controller: typingFieldController,
-                      decoration: InputDecoration(hintText: 'Message'),
-                    ),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      if (typingFieldController.text == '' ||
-                          typingFieldController.text.isEmpty) {
-                        return;
-                      }
-                      for (var notification
-                          in chatProvider.systemNotifications) {
-                        print('Notification: $notification');
-                      }
-                      chatType.sendMessage(
-                        Message(
-                          senderip: chatProvider.user!.userIp,
-                          senderUsername: chatProvider.user!.username,
-                          content: typingFieldController.text,
+            // the chat utils
+            SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  spacing: 10,
+                  children: [
+                    Expanded(
+                      child: TextFormField(
+                        controller: typingFieldController,
+                        cursorColor: Colors.indigo,
+                        style: TextStyle(color: Colors.white),
+                        decoration: InputDecoration(
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(20),
+                            borderSide: BorderSide(
+                              color: Colors.white.withOpacity(0.15),
+                            ),
+                          ),
+
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(20),
+                            borderSide: BorderSide(
+                              color: Colors.indigo,
+                              width: 1.5,
+                            ),
+                          ),
+                          hint: Text(
+                            'Message',
+                            style: TextStyle(
+                              color: Colors.white70,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
                         ),
-                      );
+                        onChanged: (value) {
+                          setState(() {});
+                        },
+                      ),
+                    ),
+                    Container(
+                      height: 48,
+                      decoration: BoxDecoration(
+                        color: typingFieldController.text.isEmpty
+                            ? Colors.indigo.withOpacity(0.4)
+                            : Colors.indigo,
+                        borderRadius: BorderRadius.circular(24),
+                      ),
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.transparent,
+                          shadowColor: Colors.transparent,
+                        ),
+                        onPressed: () {
+                          if (typingFieldController.text.trim().isEmpty) {
+                            return;
+                          }
+                          for (var notification
+                              in chatProvider.systemNotifications) {
+                            print('Notification: $notification');
+                          }
+                          chatType.sendMessage(
+                            Message(
+                              senderip: chatProvider.user!.userIp,
+                              senderUsername: chatProvider.user!.username,
+                              content: typingFieldController.text,
+                            ),
+                          );
 
-                      typingFieldController.text = '';
-                    },
-                    child: Text('Send Message'),
-                  ),
-                ],
+                          typingFieldController.text = '';
+                        },
+                        child: Icon(
+                          Icons.send_rounded,
+                          color: typingFieldController.text.isEmpty
+                              ? Colors.white24
+                              : Colors.white,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

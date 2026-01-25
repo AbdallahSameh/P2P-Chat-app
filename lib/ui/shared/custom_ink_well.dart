@@ -22,11 +22,28 @@ class CustomInkWell extends StatelessWidget {
       child: Container(
         height: height,
         decoration: BoxDecoration(
+          color: Color(0xff242333),
+          borderRadius: BorderRadius.circular(12),
           border: BoxBorder.all(
-            color: choice == index ? Colors.blueAccent : Colors.transparent,
+            color: choice == index ? Colors.indigo : Colors.transparent,
+          ),
+          boxShadow: [
+            BoxShadow(
+              offset: Offset(4, 5),
+              blurRadius: 4,
+              color: Color(0xFF242333).withOpacity(0.5),
+            ),
+          ],
+        ),
+        child: Center(
+          child: Text(
+            text,
+            style: TextStyle(
+              color: Colors.white70,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ),
-        child: Center(child: Text(text)),
       ),
     );
   }

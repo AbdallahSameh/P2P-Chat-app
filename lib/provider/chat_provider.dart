@@ -37,4 +37,8 @@ class ChatProvider extends ChangeNotifier {
     connectivityType = choice;
     notifyListeners();
   }
+
+  void deleteMessages() {
+    _messages = [];
+  }
 }

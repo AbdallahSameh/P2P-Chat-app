@@ -20,6 +20,7 @@ class Host implements ChatType {
   Future<void> start() async {
     user = chatProvider.user!;
     room = chatProvider.chatRooms[0];
+    user.userIp = await _getLocalIp();
     _udpResponder(udpPort);
     await _startTcpServer(tcpPort);
   }
@@ -35,7 +36,7 @@ class Host implements ChatType {
         final dg = rawSocket.receive();
         if (dg != null) {
           if (utf8.decode(dg.data) == 'ARE_YOU_CHAT_HOST') {
-            final serverIp = await _getLocalIp();
+            final serverIp = user.userIp;
             chatProvider.addSystemNotification(
               'Discovery request from: ${dg.address.address}',
             );

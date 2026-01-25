@@ -40,7 +40,11 @@ class _ChoiceDialogueState extends State<ChoiceDialogue> {
   Widget build(BuildContext context) {
     return Dialog(
       child: Container(
-        width: MediaQuery.of(context).size.width * 0.6,
+        width: MediaQuery.of(context).size.width * 0.8,
+        decoration: BoxDecoration(
+          color: Color(0xff1a1a24),
+          borderRadius: BorderRadius.circular(20),
+        ),
         child: Padding(
           padding: EdgeInsets.all(30),
           child: Column(
@@ -49,7 +53,10 @@ class _ChoiceDialogueState extends State<ChoiceDialogue> {
             crossAxisAlignment: CrossAxisAlignment.center,
             spacing: 40,
             children: [
-              Text('Create Chat Room'),
+              Text(
+                'Create Chat Room',
+                style: Theme.of(context).primaryTextTheme.bodyMedium,
+              ),
               Form(
                 key: formKey,
                 child: Column(
@@ -95,49 +102,70 @@ class _ChoiceDialogueState extends State<ChoiceDialogue> {
                             ),
                           ),
                         ),
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: CustomInkWell(
-                              height: 50,
-                              index: 2,
-                              text: 'Wifi Direct',
-                            ),
-                          ),
-                        ),
                       ],
                     ),
 
-                    ElevatedButton(
-                      onPressed: () {
-                        if (formKey.currentState!.validate()) {
-                          context.read<ChatProvider>().addUser(
-                            User(username: controller1.text, userIp: ''),
-                          );
+                    Container(
+                      height: 48,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            Color(0xFF7B6CFF),
+                            Color(0xFF5F55E8),
+                            Color(0xFF4F46E5),
+                          ],
+                        ),
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Color(0xFF4F46E5).withOpacity(0.5),
+                            blurRadius: 12,
+                            offset: Offset(0, 6),
+                          ),
+                        ],
+                      ),
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.transparent,
+                          shadowColor: Colors.transparent,
+                        ),
+                        onPressed: () {
+                          if (formKey.currentState!.validate()) {
+                            context.read<ChatProvider>().addUser(
+                              User(username: controller1.text, userIp: ''),
+                            );
 
-                          if (widget.choice == 1) {
-                            Room room = Room(
-                              roomName: controller2.text,
-                              hostIp: '',
-                            );
-                            room.password = controller3.text;
-                            context.read<ChatProvider>().addChatRoom(room);
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) =>
-                                    ChatScreen(choice: widget.choice),
-                              ),
-                            );
-                          } else {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (_) => HostChooser()),
-                            );
+                            if (widget.choice == 1) {
+                              Room room = Room(
+                                roomName: controller2.text,
+                                hostIp: '',
+                              );
+                              room.password = controller3.text;
+                              context.read<ChatProvider>().addChatRoom(room);
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) =>
+                                      ChatScreen(choice: widget.choice),
+                                ),
+                              );
+                            } else {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => HostChooser(),
+                                ),
+                              );
+                            }
                           }
-                        }
-                      },
-                      child: Text('Enter'),
+                        },
+                        child: Text(
+                          'Enter',
+                          style: Theme.of(context).primaryTextTheme.bodyMedium,
+                        ),
+                      ),
                     ),
                   ],
                 ),

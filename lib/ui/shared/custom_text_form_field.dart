@@ -20,7 +20,27 @@ class CustomTextFormField extends StatelessWidget {
         }
         return null;
       },
-      decoration: InputDecoration(labelText: labelText, hintText: hintText),
+      cursorColor: Colors.indigo,
+      style: TextStyle(color: Colors.white),
+      decoration: InputDecoration(
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(20),
+          borderSide: BorderSide(color: Colors.white.withOpacity(0.15)),
+        ),
+
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(20),
+          borderSide: BorderSide(color: Colors.indigo, width: 1.5),
+        ),
+        label: Text(
+          labelText,
+          style: TextStyle(color: Colors.white70, fontWeight: FontWeight.w600),
+        ),
+        hint: Text(
+          hintText,
+          style: TextStyle(color: Colors.white70, fontWeight: FontWeight.w600),
+        ),
+      ),
     );
   }
 }

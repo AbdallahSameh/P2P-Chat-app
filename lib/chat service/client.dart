@@ -46,7 +46,9 @@ class Client implements ChatType {
           if (message.startsWith('CHAT_SERVER_IP:')) {
             final foundIp = message.split(' ')[1].trim();
             final roomName = message.split(' ')[3].trim();
+            if (foundIp == user.userIp) return;
             Room room = Room(roomName: roomName, hostIp: foundIp);
+            chatProvider.addSystemNotification('Found Host $foundIp');
             chatProvider.addChatRoom(room);
           }
         }
@@ -65,7 +67,7 @@ class Client implements ChatType {
         'Connected to host: $serverIp:$tcpPort',
       );
       Message auth = Message(
-        senderip: socket!.remoteAddress.address,
+        senderip: user.userIp,
         senderUsername: user.username,
         content: password,
       );
@@ -110,15 +112,22 @@ class Client implements ChatType {
 
   Future<String> deviceIPs() async {
     final interfaces = await NetworkInterface.list(
-      includeLoopback: false,
       type: InternetAddressType.IPv4,
+      includeLoopback: false,
     );
 
     for (var interface in interfaces) {
-      print('Interface: ${interface.name}');
-      for (var addr in interface.addresses) {
-        print('  IP Address: ${addr.address}');
-        return addr.address;
+      if (chatProvider.connectivityType == 0) {
+        for (var addr in interface.addresses) {
+          return addr.address;
+        }
+      } else if (chatProvider.connectivityType == 1) {
+        if (interface.name.toLowerCase().contains('wi-fi') ||
+            interface.name.toLowerCase().contains('wlan')) {
+          for (var addr in interface.addresses) {
+            return addr.address;
+          }
+        }
       }
     }
     return 'Not Connected';

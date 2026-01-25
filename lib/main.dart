@@ -19,6 +19,18 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(home: ServerClientChooser());
+    return MaterialApp(
+      theme: ThemeData(
+        buttonTheme: ButtonThemeData(buttonColor: Colors.white),
+        primaryTextTheme: TextTheme(
+          bodyMedium: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w600,
+            fontSize: 16,
+          ),
+        ),
+      ),
+      home: ServerClientChooser(),
+    );
   }
 }
