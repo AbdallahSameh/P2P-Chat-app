@@ -4,6 +4,7 @@ import 'package:p2p_chat_app/data%20models/user.dart';
 import 'package:p2p_chat_app/provider/chat_provider.dart';
 import 'package:p2p_chat_app/ui/chat_screen.dart';
 import 'package:p2p_chat_app/ui/room_chooser.dart';
+import 'package:p2p_chat_app/ui/shared/colourful_button.dart';
 import 'package:p2p_chat_app/ui/shared/custom_ink_well.dart';
 import 'package:p2p_chat_app/ui/shared/custom_text_form_field.dart';
 import 'package:provider/provider.dart';
@@ -105,67 +106,36 @@ class _ChoiceDialogueState extends State<ChoiceDialogue> {
                       ],
                     ),
 
-                    Container(
-                      height: 48,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [
-                            Color(0xFF7B6CFF),
-                            Color(0xFF5F55E8),
-                            Color(0xFF4F46E5),
-                          ],
-                        ),
-                        borderRadius: BorderRadius.circular(12),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Color(0xFF4F46E5).withOpacity(0.5),
-                            blurRadius: 12,
-                            offset: Offset(0, 6),
-                          ),
-                        ],
-                      ),
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.transparent,
-                          shadowColor: Colors.transparent,
-                        ),
-                        onPressed: () {
-                          if (formKey.currentState!.validate()) {
-                            context.read<ChatProvider>().addUser(
-                              User(username: controller1.text, userIp: ''),
-                            );
+                    ColourfulButton(
+                      onPressed: () {
+                        if (formKey.currentState!.validate()) {
+                          context.read<ChatProvider>().addUser(
+                            User(username: controller1.text, userIp: ''),
+                          );
 
-                            if (widget.choice == 1) {
-                              Room room = Room(
-                                roomName: controller2.text,
-                                hostIp: '',
-                              );
-                              room.password = controller3.text;
-                              context.read<ChatProvider>().addChatRoom(room);
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) =>
-                                      ChatScreen(choice: widget.choice),
-                                ),
-                              );
-                            } else {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => HostChooser(),
-                                ),
-                              );
-                            }
+                          if (widget.choice == 1) {
+                            Room room = Room(
+                              roomName: controller2.text,
+                              hostIp: '',
+                            );
+                            room.password = controller3.text;
+                            context.read<ChatProvider>().addChatRoom(room);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) =>
+                                    ChatScreen(choice: widget.choice),
+                              ),
+                            );
+                          } else {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (_) => HostChooser()),
+                            );
                           }
-                        },
-                        child: Text(
-                          'Enter',
-                          style: Theme.of(context).primaryTextTheme.bodyMedium,
-                        ),
-                      ),
+                        }
+                      },
+                      text: 'Enter',
                     ),
                   ],
                 ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:p2p_chat_app/ui/dialogues/choice.dialogue.dart';
+import 'package:p2p_chat_app/ui/shared/colourful_button.dart';
 
 class ServerClientChooser extends StatefulWidget {
   const ServerClientChooser({super.key});
@@ -93,54 +94,18 @@ class _ServerClientChooserState extends State<ServerClientChooser> {
                   ),
                 ),
               ),
-              Container(
-                height: 48,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      Color(0xFF7B6CFF),
-                      Color(0xFF5F55E8),
-                      Color(0xFF4F46E5),
-                    ],
-                  ),
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Color(0xFF4F46E5).withOpacity(0.5),
-                      blurRadius: 12,
-                      offset: Offset(0, 6),
-                    ),
-                  ],
-                ),
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.transparent,
-                    shadowColor: Colors.transparent,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  onPressed: () {
-                    if (choice == null) {
-                      return;
-                    }
+              ColourfulButton(
+                text: 'Enter',
+                onPressed: () {
+                  if (choice == null) {
+                    return;
+                  }
 
-                    showDialog(
-                      context: context,
-                      builder: (_) => ChoiceDialogue(choice: choice!),
-                    );
-                  },
-                  child: Text(
-                    'Enter',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
+                  showDialog(
+                    context: context,
+                    builder: (_) => ChoiceDialogue(choice: choice!),
+                  );
+                },
               ),
             ],
           ),
