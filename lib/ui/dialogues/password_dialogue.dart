@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:p2p_chat_app/chat%20service/client.dart';
 import 'package:p2p_chat_app/data%20models/room.dart';
+import 'package:p2p_chat_app/provider/chat_provider.dart';
 import 'package:p2p_chat_app/ui/chat_screen.dart';
 import 'package:p2p_chat_app/ui/shared/custom_text_form_field.dart';
+import 'package:provider/provider.dart';
 
 class PasswordDialogue extends StatefulWidget {
   final List<Room> rooms;
@@ -22,11 +24,13 @@ class PasswordDialogue extends StatefulWidget {
 class _PasswordDialogueState extends State<PasswordDialogue> {
   late GlobalKey<FormState> _formKey;
   late TextEditingController controller;
+  late final ChatProvider chatProvider;
 
   @override
   void initState() {
     _formKey = GlobalKey<FormState>();
     controller = TextEditingController();
+    chatProvider = context.read<ChatProvider>();
     super.initState();
   }
 
@@ -59,6 +63,7 @@ class _PasswordDialogueState extends State<PasswordDialogue> {
                       widget.rooms[widget.choice].hostIp,
                       controller.text,
                     );
+                    chatProvider.updateCurrentRoom(widget.choice);
                     Navigator.push(
                       context,
                       MaterialPageRoute(

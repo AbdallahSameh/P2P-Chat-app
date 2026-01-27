@@ -49,29 +49,54 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     final List<Message> messages = context.watch<ChatProvider>().messages;
     return Scaffold(
+      appBar: AppBar(
+        iconTheme: IconThemeData(color: Colors.white),
+        title: Text(
+          context
+              .watch<ChatProvider>()
+              .chatRooms[context.watch<ChatProvider>().currentRoom]
+              .roomName,
+          style: Theme.of(
+            context,
+          ).primaryTextTheme.bodyMedium?.copyWith(fontSize: 24),
+        ),
+        backgroundColor: Color(0xff1a1a24),
+        elevation: 8,
+        centerTitle: true,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
+        ),
+        toolbarHeight: 100,
+      ),
       backgroundColor: Color(0xff1a1a24),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
-            // the chat container
             Expanded(
               child: Container(
                 child: ListView.separated(
                   reverse: true,
                   itemBuilder: (_, index) {
-                    return ListTile(
-                      leading: Text(
-                        messages[messages.length - 1 - index].senderUsername,
-                      ),
-                      title: Text(
-                        messages[messages.length - 1 - index].content,
-                      ),
-                      trailing: Text(
-                        messages[messages.length - 1 - index].sendTime ?? '0',
-                      ),
+                    // return ListTile(
+                    //   leading: Text(
+                    //     messages[messages.length - 1 - index].senderUsername,
+                    //   ),
+                    //   title: Text(
+                    //     messages[messages.length - 1 - index].content,
+                    //   ),
+                    //   trailing: Text(
+                    //     messages[messages.length - 1 - index].sendTime ?? '0',
+                    //   ),
+                    // );
+                    return ChatBubble(
+                      message: messages[messages.length - 1 - index].content,
+                      isMe:
+                          messages[messages.length - 1 - index].senderip ==
+                              context.watch<ChatProvider>().user!.userIp
+                          ? true
+                          : false,
                     );
-                    // return ChatBubble();
                   },
                   separatorBuilder: (_, index) => SizedBox(height: 10),
                   itemCount: messages.length,
@@ -79,7 +104,7 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
             ),
 
-            // the chat utils
+            // chat utils
             SafeArea(
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -88,6 +113,8 @@ class _ChatScreenState extends State<ChatScreen> {
                   children: [
                     Expanded(
                       child: TextFormField(
+                        minLines: 1,
+                        maxLines: 4,
                         controller: typingFieldController,
                         cursorColor: Colors.indigo,
                         style: TextStyle(color: Colors.white),

@@ -9,6 +9,7 @@ class ChatProvider extends ChangeNotifier {
   List<Message> _messages = [];
   List<String> _systemNotifications = [];
   List<Room> chatRooms = [];
+  int currentRoom = 0;
 
   List<Message> get messages => _messages;
   List<String> get systemNotifications => _systemNotifications;
@@ -40,5 +41,9 @@ class ChatProvider extends ChangeNotifier {
 
   void deleteMessages() {
     _messages = [];
+  }
+
+  void updateCurrentRoom(value) {
+    currentRoom = value;
   }
 }
