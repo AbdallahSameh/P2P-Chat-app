@@ -28,6 +28,12 @@ class _HostChooserState extends State<HostChooser> {
   }
 
   @override
+  void dispose() {
+    client.disconnect();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     List<Room> rooms = context.watch<ChatProvider>().chatRooms;
 
