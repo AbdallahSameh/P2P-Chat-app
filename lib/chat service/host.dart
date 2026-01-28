@@ -10,6 +10,8 @@ class Host implements ChatType {
   ChatProvider chatProvider;
   int udpPort;
   int tcpPort;
+  RawDatagramSocket? udpSocket;
+  ServerSocket? tcpSocket;
   List<Socket> clients = [];
   Room? room;
   User user = User(username: '', userIp: 'Not Connected');
@@ -26,14 +28,11 @@ class Host implements ChatType {
   }
 
   Future<void> _udpResponder(udpPort) async {
-    final rawSocket = await RawDatagramSocket.bind(
-      InternetAddress.anyIPv4,
-      udpPort,
-    );
+    udpSocket = await RawDatagramSocket.bind(InternetAddress.anyIPv4, udpPort);
 
-    rawSocket.listen((event) async {
+    udpSocket!.listen((event) async {
       if (event == RawSocketEvent.read) {
-        final dg = rawSocket.receive();
+        final dg = udpSocket!.receive();
         if (dg != null) {
           if (utf8.decode(dg.data) == 'ARE_YOU_CHAT_HOST') {
             final serverIp = user.userIp;
@@ -41,7 +40,7 @@ class Host implements ChatType {
               'Discovery request from: ${dg.address.address}',
             );
 
-            rawSocket.send(
+            udpSocket!.send(
               utf8.encode(
                 'CHAT_SERVER_IP: $serverIp ROOM_NAME: ${room!.roomName}',
               ),
@@ -58,12 +57,9 @@ class Host implements ChatType {
   }
 
   Future<void> _startTcpServer(tcpIpPort) async {
-    ServerSocket server = await ServerSocket.bind(
-      InternetAddress.anyIPv4,
-      tcpIpPort,
-    );
+    tcpSocket = await ServerSocket.bind(InternetAddress.anyIPv4, tcpIpPort);
 
-    server.listen((client) {
+    tcpSocket!.listen((client) {
       bool authenticated = false;
 
       clients.add(client);
@@ -140,5 +136,16 @@ class Host implements ChatType {
   void sendMessage(Message message) {
     chatProvider.addMessage(message);
     _broadcast(message);
+  }
+
+  stop() async {
+    udpSocket?.close();
+    udpSocket = null;
+    for (final client in List<Socket>.from(clients)) {
+      await client.close();
+    }
+    clients.clear();
+    tcpSocket?.close();
+    tcpSocket = null;
   }
 }

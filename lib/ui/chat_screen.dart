@@ -20,14 +20,15 @@ class _ChatScreenState extends State<ChatScreen> {
   late final ChatType chatType;
   late final ChatProvider chatProvider;
   late final TextEditingController typingFieldController;
+  Host? host;
 
   @override
   void initState() {
     super.initState();
     chatProvider = context.read<ChatProvider>();
     if (widget.choice == 1) {
-      final host = Host(chatProvider: chatProvider);
-      chatType = host;
+      host = Host(chatProvider: chatProvider);
+      chatType = host!;
       WidgetsBinding.instance.addPostFrameCallback((_) async {
         await chatType.start();
       });
@@ -40,8 +41,9 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   @override
-  void dispose() {
+  void dispose() async {
     typingFieldController.dispose();
+    if (host != null) host!.stop();
     super.dispose();
   }
 

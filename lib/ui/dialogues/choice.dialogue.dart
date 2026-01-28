@@ -27,6 +27,7 @@ class _ChoiceDialogueState extends State<ChoiceDialogue> {
     controller1 = TextEditingController();
     controller2 = TextEditingController();
     controller3 = TextEditingController();
+    context.read<ChatProvider>().deleteUser();
   }
 
   @override
@@ -40,107 +41,112 @@ class _ChoiceDialogueState extends State<ChoiceDialogue> {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      child: Container(
-        width: MediaQuery.of(context).size.width * 0.8,
-        decoration: BoxDecoration(
-          color: Color(0xff1a1a24),
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Padding(
-          padding: EdgeInsets.all(30),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            spacing: 40,
-            children: [
-              Text(
-                'Create Chat Room',
-                style: Theme.of(context).primaryTextTheme.bodyMedium,
-              ),
-              Form(
-                key: formKey,
-                child: Column(
-                  spacing: 20,
-                  children: [
-                    CustomTextFormField(
-                      controller: controller1,
-                      labelText: 'Username',
-                      hintText: 'Enter Username',
-                    ),
-                    if (widget.choice == 1) ...[
+      child: SingleChildScrollView(
+        child: Container(
+          width: MediaQuery.of(context).size.width * 0.8,
+          decoration: BoxDecoration(
+            color: Color(0xff1a1a24),
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Padding(
+            padding: EdgeInsets.all(30),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              spacing: 40,
+              children: [
+                Text(
+                  'Create Chat Room',
+                  style: Theme.of(context).primaryTextTheme.bodyMedium,
+                ),
+                Form(
+                  key: formKey,
+                  child: Column(
+                    spacing: 20,
+                    children: [
                       CustomTextFormField(
-                        controller: controller2,
-                        labelText: 'Room name',
-                        hintText: 'Enter Room name',
+                        controller: controller1,
+                        labelText: 'Username',
+                        hintText: 'Enter Username',
                       ),
-                      CustomTextFormField(
-                        controller: controller3,
-                        labelText: 'Password',
-                        hintText: 'Enter Password',
-                      ),
-                    ],
-
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: CustomInkWell(
-                              height: 50,
-                              index: 0,
-                              text: 'Hotspot',
-                            ),
-                          ),
+                      if (widget.choice == 1) ...[
+                        CustomTextFormField(
+                          controller: controller2,
+                          labelText: 'Room name',
+                          hintText: 'Enter Room name',
                         ),
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: CustomInkWell(
-                              height: 50,
-                              index: 1,
-                              text: 'Wifi',
-                            ),
-                          ),
+                        CustomTextFormField(
+                          controller: controller3,
+                          labelText: 'Password',
+                          hintText: 'Enter Password',
                         ),
                       ],
-                    ),
 
-                    ColourfulButton(
-                      onPressed: () {
-                        if (formKey.currentState!.validate()) {
-                          context.read<ChatProvider>().addUser(
-                            User(username: controller1.text, userIp: ''),
-                          );
-
-                          if (widget.choice == 1) {
-                            Room room = Room(
-                              roomName: controller2.text,
-                              hostIp: '',
-                            );
-                            room.password = controller3.text;
-                            context.read<ChatProvider>().addChatRoom(room);
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) =>
-                                    ChatScreen(choice: widget.choice),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: CustomInkWell(
+                                height: 50,
+                                index: 0,
+                                text: 'Hotspot',
                               ),
+                            ),
+                          ),
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: CustomInkWell(
+                                height: 50,
+                                index: 1,
+                                text: 'Wifi',
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      ColourfulButton(
+                        onPressed: () {
+                          if (formKey.currentState!.validate()) {
+                            context.read<ChatProvider>().addUser(
+                              User(username: controller1.text, userIp: ''),
                             );
-                          } else {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (_) => HostChooser()),
-                            );
+
+                            Navigator.pop(context);
+                            if (widget.choice == 1) {
+                              Room room = Room(
+                                roomName: controller2.text,
+                                hostIp: '',
+                              );
+                              room.password = controller3.text;
+                              context.read<ChatProvider>().addChatRoom(room);
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) =>
+                                      ChatScreen(choice: widget.choice),
+                                ),
+                              );
+                            } else {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => HostChooser(),
+                                ),
+                              );
+                            }
                           }
-                        }
-                      },
-                      text: 'Enter',
-                    ),
-                  ],
+                        },
+                        text: 'Enter',
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

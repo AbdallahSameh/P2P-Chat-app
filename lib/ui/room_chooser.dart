@@ -24,6 +24,7 @@ class _HostChooserState extends State<HostChooser> {
     chatProvider = context.read<ChatProvider>();
     client = Client(chatProvider: chatProvider);
     client.start();
+    chatProvider.deleteRooms();
   }
 
   @override
@@ -110,6 +111,9 @@ class _HostChooserState extends State<HostChooser> {
               ColourfulButton(
                 onPressed: () async {
                   if (choice == -1) {
+                    return;
+                  }
+                  if (choice >= rooms.length) {
                     return;
                   }
 

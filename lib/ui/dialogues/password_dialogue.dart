@@ -73,6 +73,7 @@ class _PasswordDialogueState extends State<PasswordDialogue> {
                         widget.rooms[widget.choice].hostIp,
                         controller.text,
                       );
+                      Navigator.pop(context);
                       chatProvider.updateCurrentRoom(widget.choice);
                       Navigator.push(
                         context,

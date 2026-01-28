@@ -45,5 +45,14 @@ class ChatProvider extends ChangeNotifier {
 
   void updateCurrentRoom(value) {
     currentRoom = value;
+    notifyListeners();
+  }
+
+  void deleteRooms() {
+    chatRooms = [];
+  }
+
+  void deleteUser() {
+    user = User(username: '', userIp: '');
   }
 }
