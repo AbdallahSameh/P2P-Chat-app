@@ -49,7 +49,7 @@ class ChatProvider extends ChangeNotifier {
   }
 
   void deleteRooms() {
-    chatRooms = [];
+    chatRooms.clear();
   }
 
   void deleteUser() {

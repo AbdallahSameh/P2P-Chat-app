@@ -43,7 +43,10 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void dispose() async {
     typingFieldController.dispose();
-    if (host != null) host!.stop();
+    if (host != null) {
+      host!.stop();
+      chatProvider.deleteRooms();
+    }
     super.dispose();
   }
 
