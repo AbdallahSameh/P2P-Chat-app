@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 class Message {
   String senderip, senderUsername, content;
   String? sendTime;
@@ -7,7 +9,7 @@ class Message {
     required this.senderUsername,
     required this.content,
     sendTime,
-  }) : sendTime = sendTime ?? DateTime.now().toIso8601String();
+  }) : sendTime = sendTime ?? DateFormat('hh:mm a').format(DateTime.now());
 
   factory Message.fromJson(Map<String, dynamic> message) {
     return Message(

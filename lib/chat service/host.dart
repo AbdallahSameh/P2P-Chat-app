@@ -142,7 +142,9 @@ class Host implements ChatType {
     udpSocket?.close();
     udpSocket = null;
     for (final client in List<Socket>.from(clients)) {
-      await client.close();
+      try {
+        await client.close();
+      } catch (_) {}
     }
     clients.clear();
     tcpSocket?.close();

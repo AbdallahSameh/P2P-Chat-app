@@ -95,7 +95,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     //   ),
                     // );
                     return ChatBubble(
-                      message: messages[messages.length - 1 - index].content,
+                      message: messages[messages.length - 1 - index],
                       isMe:
                           messages[messages.length - 1 - index].senderip ==
                               context.watch<ChatProvider>().user!.userIp
