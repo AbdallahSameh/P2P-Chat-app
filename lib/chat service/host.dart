@@ -60,32 +60,30 @@ class Host implements ChatType {
     tcpSocket = await ServerSocket.bind(InternetAddress.anyIPv4, tcpIpPort);
 
     tcpSocket!.listen((client) {
-      bool authenticated = false;
-
-      clients.add(client);
-
-      chatProvider.addSystemNotification(
-        'Client connected: ${client.remoteAddress.address}',
-      );
-
+      String? clientUsername;
       client.listen(
         (data) {
+          print('error is here: ${jsonDecode(utf8.decode(data))}');
           final message = Message.fromJson(jsonDecode(utf8.decode(data)));
-          if (!authenticated) {
+          if (message.type == 'auth') {
             if (message.content != room!.password) {
               chatProvider.addSystemNotification('Invalid Password');
 
               client.close();
               return;
+            } else {
+              clients.add(client);
+              clientUsername = message.senderUsername;
+              chatProvider.addSystemNotification('$clientUsername Connected');
+              shareNotifications('$clientUsername Connected');
+              return;
             }
-            authenticated = true;
-            return;
           }
 
           _handleMessage(client, message);
         },
-        onDone: () => _removeClient(client),
-        onError: (error, stackTrace) => _removeClient(client),
+        onDone: () => _removeClient(client, clientUsername!),
+        onError: (error, stackTrace) => _removeClient(client, clientUsername!),
       );
     });
   }
@@ -96,10 +94,9 @@ class Host implements ChatType {
     chatProvider.addSystemNotification('A Message Received');
   }
 
-  _removeClient(Socket client) {
-    chatProvider.addSystemNotification(
-      'Client disconnected: ${client.remoteAddress.address}',
-    );
+  _removeClient(Socket client, String clientUsername) {
+    chatProvider.addSystemNotification('$clientUsername Disconnected');
+    shareNotifications('$clientUsername Disconnected');
     clients.remove(client);
   }
 
@@ -136,6 +133,17 @@ class Host implements ChatType {
   void sendMessage(Message message) {
     chatProvider.addMessage(message);
     _broadcast(message);
+  }
+
+  void shareNotifications(String notification) {
+    sendMessage(
+      Message(
+        type: 'notification',
+        senderip: user.userIp,
+        senderUsername: user.username,
+        content: notification,
+      ),
+    );
   }
 
   stop() async {

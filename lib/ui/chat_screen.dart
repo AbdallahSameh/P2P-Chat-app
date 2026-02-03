@@ -174,6 +174,7 @@ class _ChatScreenState extends State<ChatScreen> {
                           }
                           chatType.sendMessage(
                             Message(
+                              type: 'message',
                               senderip: chatProvider.user!.userIp,
                               senderUsername: chatProvider.user!.username,
                               content: typingFieldController.text,

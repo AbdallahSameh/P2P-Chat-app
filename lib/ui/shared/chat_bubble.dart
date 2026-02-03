@@ -9,60 +9,71 @@ class ChatBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Align(
-      alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8),
-        child: Column(
-          crossAxisAlignment: isMe
-              ? CrossAxisAlignment.end
-              : CrossAxisAlignment.start,
-          children: [
-            Text(
-              message.senderUsername,
-              style: TextStyle(color: Colors.white60, fontSize: 10),
+    return message.type == 'notification'
+        ? Center(
+            child: Text(
+              message.content,
+              style: Theme.of(context).primaryTextTheme.bodyMedium,
             ),
-            Container(
-              padding: EdgeInsets.symmetric(vertical: 10, horizontal: 14),
-              margin: EdgeInsets.symmetric(vertical: 4),
-              constraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width * 0.7,
-              ),
-              decoration: BoxDecoration(
-                color: isMe ? Colors.blueAccent : Colors.grey[300],
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(16),
-                  bottomRight: Radius.circular(16),
-                  topLeft: isMe ? Radius.circular(16) : Radius.circular(0),
-                  topRight: isMe ? Radius.circular(0) : Radius.circular(16),
-                ),
-              ),
+          )
+        : Align(
+            alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
               child: Column(
-                spacing: 5,
                 crossAxisAlignment: isMe
                     ? CrossAxisAlignment.end
                     : CrossAxisAlignment.start,
                 children: [
                   Text(
-                    message.content,
-                    style: TextStyle(
-                      color: isMe ? Colors.white : Colors.black87,
-                      fontSize: 16,
-                    ),
+                    message.senderUsername,
+                    style: TextStyle(color: Colors.white60, fontSize: 10),
                   ),
-                  Text(
-                    message.sendTime.toString(),
-                    style: TextStyle(
-                      color: isMe ? Colors.white60 : Colors.black87,
-                      fontSize: 8,
+                  Container(
+                    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 14),
+                    margin: EdgeInsets.symmetric(vertical: 4),
+                    constraints: BoxConstraints(
+                      maxWidth: MediaQuery.of(context).size.width * 0.7,
+                    ),
+                    decoration: BoxDecoration(
+                      color: isMe ? Colors.blueAccent : Colors.grey[300],
+                      borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(16),
+                        bottomRight: Radius.circular(16),
+                        topLeft: isMe
+                            ? Radius.circular(16)
+                            : Radius.circular(0),
+                        topRight: isMe
+                            ? Radius.circular(0)
+                            : Radius.circular(16),
+                      ),
+                    ),
+                    child: Column(
+                      spacing: 5,
+                      crossAxisAlignment: isMe
+                          ? CrossAxisAlignment.end
+                          : CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          message.content,
+                          style: TextStyle(
+                            color: isMe ? Colors.white : Colors.black87,
+                            fontSize: 16,
+                          ),
+                        ),
+                        Text(
+                          message.sendTime.toString(),
+                          style: TextStyle(
+                            color: isMe ? Colors.white60 : Colors.black87,
+                            fontSize: 8,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
               ),
             ),
-          ],
-        ),
-      ),
-    );
+          );
   }
 }

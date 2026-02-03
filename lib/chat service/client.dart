@@ -68,10 +68,12 @@ class Client implements ChatType {
         'Connected to host: $serverIp:$tcpPort',
       );
       Message auth = Message(
+        type: 'auth',
         senderip: user.userIp,
         senderUsername: user.username,
         content: password,
       );
+
       socket!.write(jsonEncode(auth.toJson()));
 
       socket!.listen(
