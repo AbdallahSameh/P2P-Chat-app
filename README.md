@@ -30,15 +30,18 @@ The app supports host/client roles, local discovery, and direct TCP communicatio
 
 ## 🧠 Architecture Overview
 
+<pre>
 lib/
-├── chat_service/ # Networking logic (TCP / UDP)
-├── data_models/ # Message, Room, User models
-├── provider/ # App state management
+├── chat_service/     # Networking logic (TCP / UDP)
+├── data_models/      # Message, Room, User models
+├── provider/         # App state management
 ├── ui/
-│ ├── screens # Main application screens
-│ ├── dialogs # Custom dialogs
-│ └── shared # Reusable UI components
-└── interfaces/ # Abstractions for chat types
+│   ├── screens       # Main application screens
+│   ├── dialogs       # Custom dialogs
+│   └── shared        # Reusable UI components
+└── interfaces/       # Abstractions for chat types
+</pre>
+
 
 
 - **Networking layer** handles socket communication  
