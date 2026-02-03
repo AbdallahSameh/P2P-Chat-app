@@ -65,10 +65,10 @@ Material Design
     Messages are distributed directly between peers
 
 📸 Screenshots
-![alt text](screenshots\Screenshot_1770122312.png) 
-![alt text](screenshots\Screenshot_1770122328.png) 
-![alt text](screenshots\Screenshot_1770122333.png) 
-![alt text](<screenshots\Screenshot 2026-02-03 144238.png>)
-![alt text](<screenshots\Screenshot 2026-02-03 144301.png>)
-![alt text](<screenshots\Screenshot 2026-02-03 144337.png>) 
+![Screenshot 1](screenshots/Screenshot_1770122312.png)
+![Screenshot 2](screenshots/Screenshot_1770122328.png)
+![Screenshot 3](screenshots/Screenshot_1770122333.png)
+![Screenshot 4](screenshots/Screenshot%202026-02-03%20144238.png)
+![Screenshot 5](screenshots/Screenshot%202026-02-03%20144301.png)
+![Screenshot 6](screenshots/Screenshot%202026-02-03%20144337.png)
 
